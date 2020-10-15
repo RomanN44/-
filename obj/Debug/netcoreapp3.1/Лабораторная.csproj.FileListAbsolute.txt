@@ -1,0 +1,13 @@
+D:\Учёба\СПОВТ\Лабораторная\bin\Debug\netcoreapp3.1\Лабораторная.exe
+D:\Учёба\СПОВТ\Лабораторная\bin\Debug\netcoreapp3.1\Лабораторная.deps.json
+D:\Учёба\СПОВТ\Лабораторная\bin\Debug\netcoreapp3.1\Лабораторная.runtimeconfig.json
+D:\Учёба\СПОВТ\Лабораторная\bin\Debug\netcoreapp3.1\Лабораторная.runtimeconfig.dev.json
+D:\Учёба\СПОВТ\Лабораторная\bin\Debug\netcoreapp3.1\Лабораторная.dll
+D:\Учёба\СПОВТ\Лабораторная\bin\Debug\netcoreapp3.1\Лабораторная.pdb
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.csprojAssemblyReference.cache
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.AssemblyInfoInputs.cache
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.AssemblyInfo.cs
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.csproj.CoreCompileInputs.cache
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.dll
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.pdb
+D:\Учёба\СПОВТ\Лабораторная\obj\Debug\netcoreapp3.1\Лабораторная.genruntimeconfig.cache
