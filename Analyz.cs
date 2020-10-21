@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Лабораторная
@@ -16,19 +17,16 @@ namespace Лабораторная
         private List<string> allText;
         private int num_line;
         private int num_char;
-        private FileStream file;
-        private StreamReader reader;
         private string[] keywords;
         private string[] double_symvols;
         private char[] one_symvol;
         private string line;
         private Stack<char> brackets;
+        private Stack<char> squareBrackets;
 
         public struct Token
         {
             public char a;
-
-
             public int num;
             public Token(char a, int num)
             {
@@ -36,16 +34,35 @@ namespace Лабораторная
                 this.num = num;
             }
 
-            public void Show()
+            public static bool operator ==(Token t1, Token t2)
             {
-                Console.WriteLine(a + " " + num);
+                if(t1.a == t2.a && t1.num == t2.num)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            public static bool operator !=(Token t1, Token t2)
+            {
+                if (t1.a != t2.a || t1.num != t2.num)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
         public Analyz(string path)
         {
             num_line = 0;
             num_char = 0;
-            
+
             allText = File.ReadAllLines(path).ToList<string>(); //TODO проверить на пустоту файла
             keywords = new string[] {
                  "and","bool","break","case","char",
@@ -53,32 +70,267 @@ namespace Лабораторная
                  "if","int","main","not","or",
                  "true","void","while","xor"};
 
-            double_symvols = new string[] { 
-                            "==", "!=", ">=", 
-                            "<=", "+=", "-=", 
+            double_symvols = new string[] {
+                            "==", "!=", ">=",
+                            "<=", "+=", "-=",
                             "/=", "*=" };
 
-            one_symvol = new char[]  { 
-                                '!', '(', ')', '*', 
-                                '+', ',', '-', '.', '/', ':', 
-                                ';', '<', '=', '>', '?', '[', 
+            one_symvol = new char[]  {
+                                '!', '(', ')', '*',
+                                '+', ',', '-', '.',
+                                '/', ':', ';', '<',
+                                '=', '>', '?', '[',
                                 ']', '{', '}' };
             identifier = new List<string>();
             nums = new List<string>();
             D = new List<string>();//double simvols
             lytir = new List<string>();
-            //file = new FileStream(path, FileMode.Open); //TODO
-            //reader = new StreamReader(file);
 
             brackets = new Stack<char>();
-
-
+            squareBrackets = new Stack<char>();
         }
+
+        private void Error(string message)
+        {
+            Console.WriteLine(message);
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
+
         public void RecursiveDescent()
         {
-            E();
+            El();
             Console.WriteLine("Верно!");
         }
+
+        public void El() //or - K 14     
+        {
+            try
+            {
+                Tl();
+                Token tmp = Scan(true);
+                while ((tmp.a == 'K') && (tmp.num == 14))
+                {
+                    tmp = Scan(false);
+                    Console.WriteLine("or");
+                    Tl();
+                    tmp = Scan(true);
+                }
+                tmp = Scan(true);
+                if (tmp.a == new char() && tmp.num == new int())
+                {
+                    return;
+                }
+                if ((num_char != allText[num_line].Length) && brackets.Count == 0)
+                {
+                    throw new Exception();
+                }
+            }
+            catch(Exception e)
+            {
+                Error("Неверно!");
+            }
+        }
+
+        public void Tl() //and - K 0
+        {
+            Fl();
+            Token tmp = Scan(true);
+            while ((tmp.a == 'K') && (tmp.num == 0))
+            {
+                tmp = Scan(false);
+                Console.WriteLine("and");
+                Fl();
+                tmp = Scan(true);
+            }
+        }
+
+        public void Fl() // true - K 15    false - K 8   not - K 13
+        {
+            try
+            {
+                Token tmp = Scan(true);
+                if (tmp.a == 'I')
+                {
+                    Console.WriteLine("массив");
+                    tmp = Scan(false);
+                    tmp = Scan(true);
+                    if (tmp.a == 'R' && tmp.num == 15)
+                    {
+                        Fl();
+                        tmp = Scan(true);
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+                if (tmp.a == 'K' && tmp.num == 10)
+                {
+                    Console.WriteLine("if");
+                    tmp = Scan(false);
+                    if (tmp.a == 'K' && (tmp.num == 0 || tmp.num == 14))
+                    {
+                        throw new Exception();
+                    }
+                    if (tmp.a == 'C' || tmp.a == 'I')
+                    {
+                        throw new Exception();
+                    }
+                    Fl();
+                }
+                if (tmp.a == 'K' && tmp.num == 13)
+                {
+                    Console.WriteLine("not");
+                    if (tmp.a == 'K' && (tmp.num == 0 || tmp.num == 14))
+                    {
+                        throw new Exception();
+                    }
+                    if (tmp.a == 'C' || tmp.a == 'I')
+                    {
+                        throw new Exception();
+                    }
+                    tmp = Scan(false);
+                    Fl();
+                }
+                if (tmp.a == 'R' && tmp.num == 15) // '[' - R 15, ']' - R 16
+                {
+                    if (tmp.a == 'K' && (tmp.num == 0 || tmp.num == 14))
+                    {
+                        throw new Exception();
+                    }
+                    tmp = Scan(false);
+                    Console.WriteLine("Открылась квадратная скобка!");
+                    squareBrackets.Push('[');
+                    tmp = Scan(true);
+                    if (tmp.a == 'K' && (tmp.num == 15 || tmp.num == 8)) //??
+                    {
+                        tmp = Scan(false);
+                        if (tmp.num == 15)
+                        {
+                            Console.WriteLine("true");
+                        }
+                        else
+                        {
+                            Console.WriteLine("false");
+                        }
+                    }
+                    else
+                    {
+                        E();
+                    }
+                    tmp = Scan(true);
+                    if ((tmp.a == 'R' && tmp.num == 16) && (squareBrackets.Peek() == '['))
+                    {
+                        tmp = Scan(false);
+                        squareBrackets.Pop();
+                        Console.WriteLine("Квадратные скобки закрылись!");
+                        return;
+                    }
+                    Zn();
+                    tmp = Scan(false);
+                    tmp = Scan(true);
+                    if (tmp.a == 'K' && (tmp.num == 15 || tmp.num == 8)) //??
+                    {
+                        tmp = Scan(false);
+                        if(tmp.num == 15)
+                        {
+                            Console.WriteLine("true");
+                        }
+                        else
+                        {
+                            Console.WriteLine("false");
+                        }
+                    }
+                    else
+                    {
+                        E();
+                    }
+                    tmp = Scan(false);
+                    if ((tmp.a == 'R' && tmp.num == 16) && (squareBrackets.Peek() == '['))
+                    {
+                        squareBrackets.Pop();
+                        Console.WriteLine("Квадратные скобки закрылись!");
+                        return;
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+                if (tmp.a == 'R' && tmp.num == 16)
+                {
+                    if (!squareBrackets.Any() || squareBrackets.Peek() == '(')
+                    {
+                        throw new Exception();
+                    }
+                }
+                if (tmp.a == 'R' && tmp.num == 1)
+                {
+                    tmp = Scan(false);
+                    Console.WriteLine("Открылась скобка!");
+                    brackets.Push('(');
+                    El();
+                    tmp = Scan(false);
+                    if ((tmp.a == 'R' && tmp.num == 2) && (brackets.Peek() == '('))
+                    {
+                        brackets.Pop();
+                        Console.WriteLine("Скобка закрылась!");
+                        return;
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+                }
+                if (tmp.a == 'R' && tmp.num == 2)
+                {
+                    if (!brackets.Any() || brackets.Peek() == '(')
+                    {
+                        throw new Exception();
+                    }
+                }
+            }
+            catch(Exception e)
+            {
+                Error("Неверно!");
+            }
+        }
+
+        public void Zn()
+        {
+            try
+            {
+                Token tmp = Scan(true);
+
+                Token[] arr =
+                {
+                    new Token('R', 13),   // > - R 13
+                    new Token('R', 11),   // < - R 11
+                    new Token('D', 0),    // == - D 0
+                    new Token('D', 1),    // <> - != - D 1
+                    new Token('D', 2),    // >= - D 2
+                    new Token('D', 3)     // <= - D 3
+                };
+
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    if (arr[i] == tmp)
+                    {
+                        Console.WriteLine("Обнаружен знак сравнения!");
+                        return;
+                    }
+                }
+
+                throw new Exception();
+            }
+            catch(Exception e)
+            {
+                Error("Неверно!");
+            }
+        }
+
+
+        
         private void E()
         {
             try
@@ -104,6 +356,10 @@ namespace Лабораторная
                 {
                     return;
                 }
+                if(((tmp.a == 'R')&&(tmp.num == 11 || tmp.num == 13 || tmp.num == 16)) || ((tmp.a == 'D') && (tmp.num == 0 || tmp.num == 1 || tmp.num == 2 || tmp.num == 3)))
+                {
+                    return;
+                }
                 if ((num_char != allText[num_line].Length) && brackets.Count == 0)
                 {
                     throw new Exception();
@@ -111,8 +367,7 @@ namespace Лабораторная
             }
             catch(Exception e)
             {
-                Console.WriteLine("Неверно!");
-                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Error("Неверно!");
             }
 
         }
@@ -178,8 +433,7 @@ namespace Лабораторная
             }
             catch(Exception e)
             {
-                Console.WriteLine("Неверно!");
-                System.Diagnostics.Process.GetCurrentProcess().Kill();
+                Error("Неверно!");
             }
             
         }
@@ -248,7 +502,6 @@ namespace Лабораторная
                                             num_line = index_line;
                                         }
                                         return new Token('I', GetIndexOfElement(identifier, buffer));
-                                        //return "I[" + GetIndexOfElement(identifier, buffer) + "]   " + buffer;
                                     }
                                 }
                                 if (i == arr.Length - 1)// не учитывает знака
@@ -257,11 +510,10 @@ namespace Лабораторная
                                     {
                                         if (!check)
                                         {
-                                            num_char = i + 1;//!
+                                            num_char = i + 1;
                                             num_line = index_line;
                                         }
                                         return new Token('K', GetIndexOfElement(keywords, buffer));
-                                       // return "K[" + GetIndexOfElement(keywords, buffer) + "]   " + buffer;
                                     }
                                     else
                                     {
@@ -275,9 +527,7 @@ namespace Лабораторная
                                             num_line = index_line;
                                         }
                                         return new Token('I', GetIndexOfElement(identifier, buffer));
-                                       // return "I[" + GetIndexOfElement(identifier, buffer) + "]   " + buffer;
                                     }
-                                    buffer = "";
                                 }
                             }
                             break;
@@ -316,7 +566,6 @@ namespace Лабораторная
                                         num_line = index_line;
                                     }
                                     return new Token('C', GetIndexOfElement(nums, buffer));
-                                    //return "N[" + GetIndexOfElement(nums, buffer) + "]   " + buffer;
                                 }
                             }
                             break;
@@ -346,7 +595,6 @@ namespace Лабораторная
                                                 num_line = index_line;
                                             }
                                             return new Token('R', GetIndexOfElement(one_symvol, buffer));
-                                            //return "R[" + GetIndexOfElement(one_symvol, buffer) + "]   " + buffer;
                                         }
                                     }
 
@@ -394,6 +642,7 @@ namespace Лабораторная
                                         if (double_symvols[j] == buffer)
                                         {
                                             isDoubleSymvol = true;
+                                            break;
                                         }
                                     }
                                     if (isDoubleSymvol)
@@ -404,8 +653,7 @@ namespace Лабораторная
                                             num_char = i + 1;
                                             num_line = index_line;
                                         }
-                                        return new Token('D', GetIndexOfElement(D, buffer));
-                                        //return "D[" + GetIndexOfElement(D, buffer) + "]   " + buffer;
+                                        return new Token('D', GetIndexOfElement(double_symvols, buffer));
                                     }
                                     else
                                     {
@@ -417,7 +665,6 @@ namespace Лабораторная
                                                 num_line = index_line;
                                             }
                                             return new Token('R', GetIndexOfElement(one_symvol, buffer));
-                                            //return "R[" + GetIndexOfElement(one_symvol, arr[i - 1]) + "]   " + arr[i - 1];
                                         }
                                         if (CheckElement(one_symvol, arr[i]))
                                         {
@@ -427,7 +674,6 @@ namespace Лабораторная
                                                 num_line = index_line;
                                             }
                                             return new Token('R', GetIndexOfElement(one_symvol, buffer));
-                                           // return "R[" + GetIndexOfElement(one_symvol, arr[i]) + "]   " + arr[i];
                                         }
                                     }
                                     condition = 0;
@@ -455,7 +701,6 @@ namespace Лабораторная
                                     num_line = index_line;
                                 }
                                 return new Token('L', GetIndexOfElement(lytir, buffer));
-                               // return "L[" + GetIndexOfElement(lytir, buffer) + "]   " + buffer;
                             }
                             break;
                         default:
@@ -472,11 +717,10 @@ namespace Лабораторная
                 catch(Exception e)
                 {
                     
-                    Console.WriteLine("Был введен недопустимый символ "+ allText[index_line][i]+ "!");
+                    Error("Был введен недопустимый символ "+ allText[index_line][i]+ "!");
                     break;
                 }
             }
-
             return new Token(new char(), new int());
         }
         private int CheckChar(char x)

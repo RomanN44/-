@@ -12,14 +12,6 @@ namespace Лабораторная
             Analyz analyz = new Analyz("D:\\Учёба\\СПОВТ\\Лабораторная\\Text.txt");
 
             analyz.RecursiveDescent();
-
-
-            //Console.WriteLine(analyz.Scan(false));
-            //Console.WriteLine(analyz.Scan(true));
-            //Console.WriteLine(analyz.Scan(true));
-            //Console.WriteLine(analyz.Scan(false));
-            //Console.WriteLine(analyz.Scan(false));
-
             Console.ReadKey();
         }
     }
