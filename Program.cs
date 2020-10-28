@@ -10,7 +10,6 @@ namespace Лабораторная
         static void Main(string[] args)
         {
             Analyz analyz = new Analyz("D:\\Учёба\\СПОВТ\\Лабораторная\\Text.txt");
-
             analyz.RecursiveDescent();
             Console.ReadKey();
         }

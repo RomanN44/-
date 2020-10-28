@@ -96,11 +96,7 @@ namespace Лабораторная
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
 
-        public void RecursiveDescent()
-        {
-            El();
-            Console.WriteLine("Верно!");
-        }
+
 
         public void El() //or - K 14     
         {
@@ -125,7 +121,7 @@ namespace Лабораторная
                     throw new Exception();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error("Неверно!");
             }
@@ -232,7 +228,7 @@ namespace Лабораторная
                     if (tmp.a == 'K' && (tmp.num == 15 || tmp.num == 8)) //??
                     {
                         tmp = Scan(false);
-                        if(tmp.num == 15)
+                        if (tmp.num == 15)
                         {
                             Console.WriteLine("true");
                         }
@@ -290,7 +286,7 @@ namespace Лабораторная
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error("Неверно!");
             }
@@ -323,42 +319,124 @@ namespace Лабораторная
 
                 throw new Exception();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error("Неверно!");
             }
         }
 
+        public void RecursiveDescent()
+        {
+             E();
+            Console.WriteLine("Верно!");
+        }
 
-        
+        public void RecursiveDescentLogical()
+        {
+            El();
+            Console.WriteLine("Верно!");
+        }
+
+
+
+
+        //private void E()
+        //{
+        //    try
+        //    {
+        //        T();
+        //        Token tmp = Scan(true);
+        //        while ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6)))
+        //        {
+        //            tmp = Scan(false);
+        //            if (tmp.num == 6)
+        //            {
+        //                Console.WriteLine("-");
+        //            }
+        //            if (tmp.num == 4)
+        //            {
+        //                Console.WriteLine("+");
+        //            }
+        //            T();
+        //            tmp = Scan(true);
+        //        }
+        //        tmp = Scan(true);
+        //        if (tmp.a == new char() && tmp.num == new int())
+        //        {
+        //            return;
+        //        }
+        //        if(((tmp.a == 'R')&&(tmp.num == 11 || tmp.num == 13 || tmp.num == 16)) || ((tmp.a == 'D') && (tmp.num == 0 || tmp.num == 1 || tmp.num == 2 || tmp.num == 3)))
+        //        {
+        //            return;
+        //        }
+        //        if ((num_char != allText[num_line].Length) && brackets.Count == 0)
+        //        {
+        //            throw new Exception();
+        //        }
+        //    }
+        //    catch(Exception e)
+        //    {
+        //        Error("Неверно!");
+        //    }
+
+        //}
+
+        //private void T()
+        //{
+        //    F();
+        //    Token tmp = Scan(true);
+        //    while((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8)))
+        //    {
+        //        tmp = Scan(false);
+        //        if (tmp.num == 3)
+        //        {
+        //            Console.WriteLine("*");
+        //        }
+        //        if (tmp.num == 8)
+        //        {
+        //            Console.WriteLine("/");
+        //        }
+        //        F();
+        //        tmp = Scan(true);
+        //    }
+        //}
+
         private void E()
+        {
+            T();
+            E2();
+        }
+
+        private void E2()
         {
             try
             {
-                T();
                 Token tmp = Scan(true);
-                while ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6)))
+                if ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6))) //+ -
                 {
                     tmp = Scan(false);
-                    if (tmp.num == 6)
-                    {
-                        Console.WriteLine("-");
-                    }
                     if (tmp.num == 4)
                     {
                         Console.WriteLine("+");
                     }
+                    if (tmp.num == 6)
+                    {
+                        Console.WriteLine("-");
+                    }
                     T();
-                    tmp = Scan(true);
                 }
                 tmp = Scan(true);
                 if (tmp.a == new char() && tmp.num == new int())
                 {
                     return;
                 }
-                if(((tmp.a == 'R')&&(tmp.num == 11 || tmp.num == 13 || tmp.num == 16)) || ((tmp.a == 'D') && (tmp.num == 0 || tmp.num == 1 || tmp.num == 2 || tmp.num == 3)))
+                if (((tmp.a == 'R') && (tmp.num == 11 || tmp.num == 13 || tmp.num == 16)) || ((tmp.a == 'D') && (tmp.num == 0 || tmp.num == 1 || tmp.num == 2 || tmp.num == 3)))
                 {
                     return;
+                }
+                if ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6)))
+                {
+                    E2();
                 }
                 if ((num_char != allText[num_line].Length) && brackets.Count == 0)
                 {
@@ -367,16 +445,23 @@ namespace Лабораторная
             }
             catch(Exception e)
             {
-                Error("Неверно!");
+                Error("Ошибка");
             }
 
+            //E2
         }
+
 
         private void T()
         {
             F();
+            T2();
+        }
+
+        private void T2()
+        {
             Token tmp = Scan(true);
-            while((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8)))
+            if ((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8))) // * /
             {
                 tmp = Scan(false);
                 if (tmp.num == 3)
@@ -388,8 +473,13 @@ namespace Лабораторная
                     Console.WriteLine("/");
                 }
                 F();
-                tmp = Scan(true);
             }
+            if ((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8)))
+            {
+                T2();
+            }
+            //if
+            //T2
         }
 
         private void F()
