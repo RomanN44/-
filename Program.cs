@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Security.Principal;
 
 namespace Лабораторная
 {
@@ -10,7 +11,9 @@ namespace Лабораторная
         static void Main(string[] args)
         {
             Analyz analyz = new Analyz("D:\\Учёба\\СПОВТ\\Лабораторная\\Text.txt");
-            analyz.RecursiveDescent();
+
+            analyz.PRG();
+
             Console.ReadKey();
         }
     }

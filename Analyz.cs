@@ -68,7 +68,9 @@ namespace Лабораторная
                  "and","bool","break","case","char",
                  "default","do","else","false","for",
                  "if","int","main","not","or",
-                 "true","void","while","xor"};
+                 "true","void","while","xor", "programm",
+                 "declare", "end", "array", "integer", "char",
+                 "boolean", "of"};
 
             double_symvols = new string[] {
                             "==", "!=", ">=",
@@ -96,7 +98,206 @@ namespace Лабораторная
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
 
+        public void PRG()
+        {
+            Token tmp = Scan(true); //programm - 19
+            if((tmp.a != 'K') || (tmp.num != 19))
+            {
+                Error("Ошибка в блоке объявления программы - нет programm!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if(tmp.a != 'I')
+            {
+                Error("Ошибка в блоке объявления программы - не идентификатор!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if ((tmp.a != 'R') || (tmp.num != 10)) // ; - 10
+            {
+                Error("Ошибка в блоке объявления программы - нет ;!");
+            }
+            tmp = Scan(false);
+            BLD(); //функция декларации
 
+            tmp = Scan(true);
+            tmp = Scan(false);
+            if ((tmp.a != 'K') || (tmp.num != 12)) // main - 10
+            {
+                Error("Ошибка в блоке объявления программы - нет main!");
+            }
+
+            BLO(); //функция блока операторов
+            tmp = Scan(true);
+            if ((tmp.a != 'K') || (tmp.num != 21)) // end - 21
+            {
+                Error("Ошибка в блоке объявления программы - нет end!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if ((tmp.a != 'R') || (tmp.num != 7)) // . - 10
+            {
+                Error("Ошибка в блоке объявления программы - нет .!");
+            }
+            Console.WriteLine("Все хорошо!");
+        }
+
+        private void BLD() //функция декларации
+        {
+            Token tmp = Scan(true);
+            if (!((tmp.a == 'K') && (tmp.num == 20))) //declare - 20
+            {
+                return;
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            while (!((tmp.a == 'K') && (tmp.num == 12))) //main - 12
+            {
+                if (tmp.a == 'I')
+                {
+                    tmp = Scan(false);
+                }
+                else
+                {
+                    Error("Ошибка в блоке декларации типа - не идентификатор!");
+                }
+                tmp = Scan(true);
+                if ((tmp.a == 'R') && (tmp.num == 9)) // : - 9
+                {
+                    tmp = Scan(false);
+                }
+                else
+                {
+                    while (!((tmp.a == 'R') && (tmp.num == 9))) // : - 9
+                    {
+                        if ((tmp.a == 'R') && (tmp.num == 5)) // , - 5
+                        {
+                            tmp = Scan(false);
+                        }
+                        else
+                        {
+                            Error("Ошибка в блоке декларации - нет ,!");
+                        }
+                        tmp = Scan(true);
+                        if (tmp.a == 'I')
+                        {
+                            tmp = Scan(false);
+                        }
+                        else
+                        {
+                            Error("Ошибка в блоке декларации - нет идентификатор!");
+                        }
+                        tmp = Scan(true);
+                    }
+                    tmp = Scan(false);
+                }
+                BT();
+                tmp = Scan(true);
+                if ((tmp.a == 'R') && (tmp.num == 10)) // ; - 10
+                {
+                    tmp = Scan(false);
+                }
+                else if (!((tmp.a == 'K') || (tmp.num == 12))) //main - 12
+                {
+                    Error("Ошибка в блоке декларации - нет main!");
+                }
+                tmp = Scan(true);
+            }
+
+            //tmp = Scan(false);
+        }
+
+        private void BT() //блок типов
+        {
+            Token tmp = Scan(true);
+            if (tmp.a != 'K')
+            {
+                Error("Ошибка в объявлении типа - не ключевой токен");
+            }
+            else
+            {
+                if (tmp.num == 22) //array - 22
+                {
+                    Array();
+                }
+                else
+                {
+                    Simple();
+                }
+            }
+
+        }
+        private void Simple() //функция простого типа
+        {
+            Token tmp = Scan(true);
+
+            if (tmp.a == 'K')
+            {
+                switch (tmp.num)
+                {
+                    case 23: break; //integer - 23 
+                    case 24: break; //char - 24
+                    case 25: break; //boolean - 25
+                    default: Error("Ошибка в объявлении простого типа - не верный простой тип!"); break;
+                }
+                tmp = Scan(false);
+            }
+            else
+            {
+                Error("Ошибка в объявлении простого типа - не ключевой токен!");
+            }
+        }
+
+        private void Array() //функция массива
+        {
+            Token tmp = Scan(true);
+            if ((tmp.a != 'K') || (tmp.num != 22)) //array - 22
+            {
+                Error("Ошибка в объявлении массива - нет array!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if ((tmp.a != 'R') || (tmp.num != 15)) // [ 15
+            {
+                Error("Ошибка в объявлении массива - нет [!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if (tmp.a != 'C')
+            {
+                Error("Ошибка в объявлении массива - размерность не число!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if ((tmp.a != 'R') || (tmp.num != 16)) // ] 16
+            {
+                Error("Ошибка в объявлении массива - нет ]!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if ((tmp.a != 'K') || (tmp.num != 26)) // of 26
+            {
+                Error("Ошибка в объявлении массива - нет of!");
+            }
+            tmp = Scan(false);
+            Simple();
+        }
+
+        private void BLO() //функция объявлений
+        {
+            Token tmp = Scan(true);
+            if ((tmp.a != 'R') || (tmp.num != 17)) // { 17
+            {
+                Error("Ошибка в блоке объявлений - нет {!");
+            }
+            tmp = Scan(false);
+            tmp = Scan(true);
+            if ((tmp.a != 'R') || (tmp.num != 18)) // } 18
+            {
+                Error("Ошибка в блоке объявлений - нет }!");
+            }
+            tmp = Scan(false);
+        }
 
         public void El() //or - K 14     
         {
@@ -327,7 +528,7 @@ namespace Лабораторная
 
         public void RecursiveDescent()
         {
-             E();
+           //  E();
             Console.WriteLine("Верно!");
         }
 
@@ -401,13 +602,14 @@ namespace Лабораторная
         //    }
         //}
 
-        private void E()
+        private double E()
         {
-            T();
-            E2();
+            double res = T();
+            E2(ref res);
+            return res;
         }
 
-        private void E2()
+        private void E2(ref double res)
         {
             try
             {
@@ -417,13 +619,12 @@ namespace Лабораторная
                     tmp = Scan(false);
                     if (tmp.num == 4)
                     {
-                        Console.WriteLine("+");
+                        res = res + T();
                     }
                     if (tmp.num == 6)
                     {
-                        Console.WriteLine("-");
+                        res = res - T();
                     }
-                    T();
                 }
                 tmp = Scan(true);
                 if (tmp.a == new char() && tmp.num == new int())
@@ -436,29 +637,27 @@ namespace Лабораторная
                 }
                 if ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6)))
                 {
-                    E2();
+                    E2(ref res);
                 }
                 if ((num_char != allText[num_line].Length) && brackets.Count == 0)
                 {
                     throw new Exception();
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error("Ошибка");
             }
-
-            //E2
         }
 
-
-        private void T()
+        private double T()
         {
-            F();
-            T2();
+            double res = F();
+            T2(ref res);
+            return res;
         }
 
-        private void T2()
+        private void T2(ref double res)
         {
             Token tmp = Scan(true);
             if ((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8))) // * /
@@ -466,47 +665,51 @@ namespace Лабораторная
                 tmp = Scan(false);
                 if (tmp.num == 3)
                 {
-                    Console.WriteLine("*");
+                    res = res * F();
                 }
-                if (tmp.num == 8)
+                else
                 {
-                    Console.WriteLine("/");
+                    res = res / F();
                 }
-                F();
+                //F();
             }
             if ((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8)))
             {
-                T2();
+                T2(ref res);
             }
-            //if
-            //T2
         }
 
-        private void F()
+        private double F()//!
         {
+            double res;
             try
             {
                 Token tmp = Scan(true);
                 if (tmp.a == 'I' || tmp.a == 'C')
                 {
-                    if(tmp.a == 'I')
-                        Console.WriteLine("Идентификатор");
+
                     if (tmp.a == 'C')
-                        Console.WriteLine("Число");
-                    tmp = Scan(false);
+                    {
+                        tmp = Scan(false);
+                        res = Convert.ToDouble(nums[tmp.num]);
+                        return res;
+                    }
+                    else
+                    {
+                        //Console.WriteLine("Идентификатор");
+                        throw new Exception("Идентификатор нельзя!");
+                    }
                 }
                 if (tmp.a == 'R' && tmp.num == 1)
                 {
                     tmp = Scan(false);
-                    Console.WriteLine("Открылась скобка!");
                     brackets.Push('(');
-                    E();
+                    res = E();
                     tmp = Scan(false);
                     if ((tmp.a == 'R' && tmp.num == 2) && (brackets.Peek() == '('))
                     {
                         brackets.Pop();
-                        Console.WriteLine("Скобка закрылась!");
-                        return;
+                        return res;
                     }
                     else
                     {
@@ -520,26 +723,180 @@ namespace Лабораторная
                         throw new Exception();
                     }
                 }
+                throw new Exception("Неизвестный символ!");
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Error("Неверно!");
+                return 0;
             }
-            
+
         }
 
-        public Token Scan(bool check)
+
+
+        public int Calculate()
+        {
+            return (int)E();
+        }
+
+
+        //private void E()
+        //{
+        //    T();
+        //    E2();
+        //}
+
+        //private void E2()
+        //{
+        //    try
+        //    {
+        //        Token tmp = Scan(true);
+        //        if ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6))) //+ -
+        //        {
+        //            tmp = Scan(false);
+        //            if (tmp.num == 4)
+        //            {
+        //                Console.WriteLine("+");
+        //            }
+        //            if (tmp.num == 6)
+        //            {
+        //                Console.WriteLine("-");
+        //            }
+        //            T();
+        //        }
+        //        tmp = Scan(true);
+        //        if (tmp.a == new char() && tmp.num == new int())
+        //        {
+        //            return;
+        //        }
+        //        if (((tmp.a == 'R') && (tmp.num == 11 || tmp.num == 13 || tmp.num == 16)) || ((tmp.a == 'D') && (tmp.num == 0 || tmp.num == 1 || tmp.num == 2 || tmp.num == 3)))
+        //        {
+        //            return;
+        //        }
+        //        if ((tmp.a == 'R') && ((tmp.num == 4) || (tmp.num == 6)))
+        //        {
+        //            E2();
+        //        }
+        //        if ((num_char != allText[num_line].Length) && brackets.Count == 0)
+        //        {
+        //            throw new Exception();
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Error("Ошибка");
+        //    }
+
+        //    //E2
+        //}
+
+
+        //private void T()
+        //{
+        //    F();
+        //    T2();
+        //}
+
+        //private void T2()
+        //{
+        //    Token tmp = Scan(true);
+        //    if ((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8))) // * /
+        //    {
+        //        tmp = Scan(false);
+        //        if (tmp.num == 3)
+        //        {
+        //            Console.WriteLine("*");
+        //        }
+        //        if (tmp.num == 8)
+        //        {
+        //            Console.WriteLine("/");
+        //        }
+        //        F();
+        //    }
+        //    if ((tmp.a == 'R') && ((tmp.num == 3) || (tmp.num == 8)))
+        //    {
+        //        T2();
+        //    }
+        //    //if
+        //    //T2
+        //}
+
+        //private void F()
+        //{
+        //    try
+        //    {
+        //        Token tmp = Scan(true);
+        //        if (tmp.a == 'I' || tmp.a == 'C')
+        //        {
+        //            if (tmp.a == 'I')
+        //                Console.WriteLine("Идентификатор");
+        //            if (tmp.a == 'C')
+        //                Console.WriteLine("Число");
+        //            tmp = Scan(false);
+        //        }
+        //        if (tmp.a == 'R' && tmp.num == 1)
+        //        {
+        //            tmp = Scan(false);
+        //            Console.WriteLine("Открылась скобка!");
+        //            brackets.Push('(');
+        //            E();
+        //            tmp = Scan(false);
+        //            if ((tmp.a == 'R' && tmp.num == 2) && (brackets.Peek() == '('))
+        //            {
+        //                brackets.Pop();
+        //                Console.WriteLine("Скобка закрылась!");
+        //                return;
+        //            }
+        //            else
+        //            {
+        //                throw new Exception("Ошибка!");
+        //            }
+        //        }
+        //        if (tmp.a == 'R' && tmp.num == 2)
+        //        {
+        //            if (!brackets.Any() || brackets.Peek() == '(')
+        //            {
+        //                throw new Exception();
+        //            }
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Error("Неверно!");
+        //    }
+
+        //}
+
+        
+
+        public Token Scan(bool check) //true - проверить false - переместиться
         {
             bool isError = false;
             int old_condition, condition = 0;
             string buffer = "";
-            int index_line = 0;
+          //  int index_line; 
+            //int index_line = num_line;
             line = allText[num_line];
+            if (num_char == line.Length)
+            {
+                num_line++;
+                num_char = 0;
+                line = allText[num_line];
+            }
             char[] arr = line.ToCharArray();
+            if(arr[arr.Length-1] == ' ' || arr[arr.Length - 1] == '\t')
+            {
+                num_line++;
+                num_char = 0;
+                line = allText[num_line];
+                arr = line.ToCharArray();
+            }
             for (int i = num_char; i < arr.Length; i++)
             {
                 try
                 {
+
                     if (isError)
                     {
                         break;
@@ -575,10 +932,9 @@ namespace Лабораторная
                                         if (!check)
                                         {
                                             num_char = i + 1;
-                                            num_line = index_line;
+                                          //  num_line = index_line;
                                         }
                                         return new Token('K', GetIndexOfElement(keywords, buffer));
-                                        //return "К[" + GetIndexOfElement(keywords, buffer) + "]   " + buffer;
                                     }
                                     else
                                     {
@@ -589,7 +945,7 @@ namespace Лабораторная
                                         if (!check)
                                         {
                                             num_char = i + 1;
-                                            num_line = index_line;
+                                          //  num_line = index_line;
                                         }
                                         return new Token('I', GetIndexOfElement(identifier, buffer));
                                     }
@@ -601,7 +957,7 @@ namespace Лабораторная
                                         if (!check)
                                         {
                                             num_char = i + 1;
-                                            num_line = index_line;
+                                           // num_line = index_line;
                                         }
                                         return new Token('K', GetIndexOfElement(keywords, buffer));
                                     }
@@ -614,7 +970,7 @@ namespace Лабораторная
                                         if (!check)
                                         {
                                             num_char = i + 1;
-                                            num_line = index_line;
+                                        //    num_line = index_line;
                                         }
                                         return new Token('I', GetIndexOfElement(identifier, buffer));
                                     }
@@ -625,14 +981,22 @@ namespace Лабораторная
                             {
                                 if(i==arr.Length-1)
                                 {
+                                    if(buffer == "")
+                                    {
+                                        buffer += arr[i];
+                                    }
                                     if (!CheckElement(nums, buffer))
                                     {
+                                        if(CheckChar(arr[i]) == 2)
+                                        {
+                                            buffer += arr[i];
+                                        }
                                         nums.Add(buffer);
                                     }
                                     if (!check)
                                     {
                                         num_char = i + 1;
-                                        num_line = index_line;
+                                       // num_line = index_line;
                                     }
                                     return new Token('C', GetIndexOfElement(nums, buffer));
                                 }
@@ -653,7 +1017,7 @@ namespace Лабораторная
                                     if (!check)
                                     {
                                         num_char = i + 1;
-                                        num_line = index_line;
+                                      //  num_line = index_line;
                                     }
                                     return new Token('C', GetIndexOfElement(nums, buffer));
                                 }
@@ -669,7 +1033,7 @@ namespace Лабораторная
                                 }
                                 else
                                 {
-                                    if ((i != arr.Length - 1) && (arr[i] == '/') && (CheckChar(arr[i + 1]) == 3))
+                                     if ((i != arr.Length - 1) && (arr[i] == '/') && (CheckChar(arr[i + 1]) == 3))
                                     {
                                         buffer += arr[i];
                                         condition = 4;
@@ -682,7 +1046,7 @@ namespace Лабораторная
                                             if (!check)
                                             {
                                                 num_char = i + 1;
-                                                num_line = index_line;
+                                               // num_line = index_line;
                                             }
                                             return new Token('R', GetIndexOfElement(one_symvol, buffer));
                                         }
@@ -694,8 +1058,10 @@ namespace Лабораторная
                         case 4:
                             {
                                 bool isDoubleSymvol = false;
-                                buffer += arr[i];
-
+                                if(i >= 0)
+                                {
+                                    buffer += arr[i];
+                                }
                                 if (buffer == "//")
                                 {
                                     do
@@ -705,25 +1071,33 @@ namespace Лабораторная
                                     }
                                     while (i != arr.Length - 1);
                                     Console.WriteLine("Comment: " + buffer);
-                                    condition = 0;
+                                    num_line++;
+                                    num_char = 0;
+                                    return Scan(check);
                                 }
                                 else if ((buffer == "/*") || ((buffer[0] == '/') && (buffer[1] == '*')))
                                 {
+
                                     do
                                     {
                                         i++;
                                         buffer += arr[i];
+
                                         if ((arr[i] == '*') && (arr[i + 1] == '/'))
                                         {
                                             i++;
                                             buffer += arr[i];
-                                            condition = 0;
                                             Console.WriteLine("Comment: " + buffer);
-                                            break;
+                                            num_char = i + 1;
+                                            return Scan(check);
+
                                         }
                                     }
                                     while (i != arr.Length - 1);
-
+                                    i = -2;
+                                    num_line++;
+                                    line = allText[num_line];
+                                    arr = line.ToCharArray();
                                 }
                                 else
                                 {
@@ -741,7 +1115,7 @@ namespace Лабораторная
                                         if (!check)
                                         {
                                             num_char = i + 1;
-                                            num_line = index_line;
+                                           // num_line = index_line;
                                         }
                                         return new Token('D', GetIndexOfElement(double_symvols, buffer));
                                     }
@@ -752,7 +1126,7 @@ namespace Лабораторная
                                             if (!check)
                                             {
                                                 num_char = i;
-                                                num_line = index_line;
+                                            //    num_line = index_line;
                                             }
                                             return new Token('R', GetIndexOfElement(one_symvol, buffer));
                                         }
@@ -761,7 +1135,7 @@ namespace Лабораторная
                                             if (!check)
                                             {
                                                 num_char = i + 1;
-                                                num_line = index_line;
+                                             //   num_line = index_line;
                                             }
                                             return new Token('R', GetIndexOfElement(one_symvol, buffer));
                                         }
@@ -788,26 +1162,20 @@ namespace Лабораторная
                                 if (!check)
                                 {
                                     num_char = i + 1;
-                                    num_line = index_line;
+                                 //   num_line = index_line;
                                 }
                                 return new Token('L', GetIndexOfElement(lytir, buffer));
                             }
-                            break;
                         default:
                             {
                                 throw new Exception();
                             }
-                            break;
-                    }
-                    if (i == arr.Length - 1)
-                    {
-                        num_char++;
                     }
                 }
                 catch(Exception e)
                 {
                     
-                    Error("Был введен недопустимый символ "+ allText[index_line][i]+ "!");
+                    Error("Был введен недопустимый символ "+ allText[num_line][i]+ "!");
                     break;
                 }
             }

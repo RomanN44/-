@@ -1,1 +1,11 @@
-﻿s+4/(4-a)*9)-3
+﻿programm MyProgramm;
+declare
+X: integer;
+Y: array[2] of boolean; //комментарий
+Z, ZZ, ZZZ: char;
+main
+{
+/*какой-то
+код*/
+}
+end.
